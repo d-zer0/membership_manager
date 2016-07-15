@@ -12,7 +12,7 @@ class MembershipManager
 		puts "--- MAIN MENU ---"
 		menu = {
 			"Find" => method(:member_search), 
-			"List" => nil, 
+			"List" => method(:list_members), 
 			"Add" => method(:add_member),
 			"Change Status" => method(:assign_status), 
 			"Delete Record" => nil
@@ -28,11 +28,11 @@ class MembershipManager
 		input = gets.chomp.to_i
 		puts "Input: #{input.inspect}"
 		@action = options[input-1]
+		clear_screen
 		#begin
 			menu[@action].call
 #		rescue
-#			clear_screen
-#			puts "Error: Invalid input or feature not implemented."
+#			flash_message("Error: Invalid input or feature not implemented.")
 #			return main_menu
 #		end
 
@@ -53,15 +53,16 @@ class MembershipManager
 
 	def create_member_list
 		@members = {
-			approved: [],
-			unapproved: [],
-			removed: [],
-			banned: []
+			"Approved" => [],
+			"Unapproved" => [],
+			"Removed" => [],
+			"Banned" => []
 		}
 		save_member_list
 	end
 
 	def reset_variables
+		@current_status = false
 		@member_exists = false
 		@name = ""
 		@action = ""
@@ -89,12 +90,64 @@ class MembershipManager
 		find_member(@name)
 	end
 
+	# THIS is what I'm having trouble with
+	# It should see if name exists as the value for "Name" in any of the profile hashes.
+	def find_member(name)
+		@members.each do |member|
+			member.each do |status|
+				counter = 0
+				profile = status[counter]
+				unless profile == nil
+					name = profile["Name"]
+					puts name
+					puts name.class.name
+					puts
+				end
+				counter +=1
+			end
+		end
 
+		# Some working out I did trying to get to the "Name" keys
+=begin
+		# Members Hash
+		puts "@members is a #{@members.class.name}"
+		puts @members.inspect
+		puts
+
+		#Status arrays
+		puts "@members['Banned'] is a #{@members["Banned"].class.name}"
+		puts @members["Banned"]
+		puts
+
+		#Profile hashes
+		banned = @members["Banned"]
+		puts "banned[0] is a #{banned[0].class.name}"
+		puts banned[0].inspect
+		puts
+
+		#Profile keys
+		puts "#{banned[0]["Name"]} is a #{banned[0]["Name"].class.name}"
+		puts banned[0]["Name"].inspect
+		x = banned[0]["Name"]
+		@current_status = banned[0]["Status"]
+		puts
+
+		@member_exists = true if x == name
+		puts "@member_exists: #{@member_exists}"
+=end
+		#end
+		#puts "Exists: #{@member_exists}"
+		#sleep 2
+	end
+
+=begin
 	def find_member(name)
 		update_names_to_keys_if_necessary
-		@current_status = @member_to_keys[@name]
-		@member_exists = true unless @current_status.empty?
-		@current_status
+		#@member_exists = true if @member_to_keys.exists? (@name)
+		puts @member_exists.inspect
+		#@current_status = @member_to_keys[@name]
+		#@member_exists = true unless @current_status == false
+		#@current_status
 	end
 
 	def update_names_to_keys_if_necessary
@@ -102,6 +155,7 @@ class MembershipManager
 		@member_to_keys = @members.each_with_object(Hash.new { |h,k| h[k] = [] }) { |(k,v),h| v.each { |name| h[@name] << k } }
 		@old_members = @member_to_keys
 	end
+=end
 
 	def add_member
 		member_search
@@ -132,20 +186,28 @@ class MembershipManager
 		input = gets.chomp
 		@new_group = case input
 		when "1" #Approved
-			:approved
+			"Approved"
 		when "2"
-			:unapproved
+			"Unapproved"
 		when "3"
-			:removed
+			"Removed"
 		when "4"
-			:banned
+			"Banned"
 		end
 		#puts "DEBUG: @members is #{@members.inspect}"
 		#sleep 1
-		@members.values.each do |member|
-			member.delete_if {|it| it == @name}
-		end
-		@members[@new_group] << @name
+		# DELETE ENTRIES
+		#@members.values.each do |member|
+		#	member.delete_if {|it| it.values["Name"] == @name}
+		#end
+		#new_member = []
+		profile = {
+			"Name" => @name, 
+			"Status" => @new_group, 
+			"Join Date" => Time.new
+		}
+		#new_member << profile
+		@members[@new_group] << profile
 		flash_message("#{@name} added to #{@new_group}")
 	end
 
@@ -154,41 +216,25 @@ class MembershipManager
 		puts message
 	end
 
-end
-
-=begin
-	def find_member(@name)
-		puts "Members: #{@members.inspect}"
-  		@members.select {|k,v| v.include? @name }.keys
-	end
-=end
-
-=begin
-	def find_member_group(@name)
-		@members.each { |group, @names| return group if @names.include?(@name) }
-		nil
-	end
-
-	def find_member
-		clear_screen
-		puts "---Find Member---"
-		puts ""
-		puts "@name: "
-		@name = gets.chomp
-		group_@name = find_member_group(@name)
-		puts group_@name ? "#{@name} found in #{group_@name}." : "#{@name} not found."
-		if group_@name != nil
-			puts "Move #{@name} from #{group_@name}?"
-			puts "[1]Yes [2]No"
-			input = gets.chomp
-			if input == "1"
-				@old_group = group_@name
-				move_member
-			else
-				main_menu
-			end
+	def list_members
+		@members.keys.each_with_index do |member, index|
+			puts "#{index+1}. #{member.capitalize}"
 		end
+		input = gets.chomp.to_i
+		clear_screen
+		status = @members.keys[input-1]
+		members = @members.values[input-1]
+		puts "--- #{status.upcase} ---"
+		members.each_with_index do |member, index|
+			puts "#{index+1}. #{member}"
+		end
+		puts "Select member with number or [C]Change List [X]Main Menu"
+		input = gets.chomp.to_i
+		#unfinished
 	end
-=end
+
+
+
+end
 
 member = MembershipManager.new

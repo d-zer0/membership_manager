@@ -1,16 +1,26 @@
 --- !ruby/object:MembershipManager
+current_status: false
 member_exists: false
 name: ''
 action: ''
 new_group: ''
 members:
-  :approved:
-  - moogle
-  :unapproved: []
-  :removed: []
-  :banned: []
-member_to_keys: &1
-  moogle: &2
-  - :unapproved
-old_members: *1
-current_status: *2
+  Approved:
+  - Name: q
+    Status: Approved
+    Join Date: 2016-07-15 20:29:48.717669000 +01:00
+  - Name: Daniel
+    Status: Approved
+    Join Date: 2016-07-15 20:47:38.585737000 +01:00
+  Unapproved:
+  - Name: w
+    Status: Unapproved
+    Join Date: 2016-07-15 20:30:44.250648000 +01:00
+  Removed:
+  - Name: e
+    Status: Removed
+    Join Date: 2016-07-15 20:30:49.118122000 +01:00
+  Banned:
+  - Name: r
+    Status: Banned
+    Join Date: 2016-07-15 20:30:53.447454000 +01:00
