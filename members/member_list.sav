@@ -1,34 +1,16 @@
 --- !ruby/object:MembershipManager
-member_exists: true
+member_exists: false
+name: ''
+action: ''
+new_group: ''
 members:
   :approved:
-  - George Seaton
-  - Daniel Varcas
   - moogle
-  - moogle
-  - moogle
-  - moogle
-  - moogle
-  - moogle
-  - moogle
-  :unapproved:
-  - moogle
+  :unapproved: []
   :removed: []
-  :banned:
-  - moogle
+  :banned: []
 member_to_keys: &1
-  George Seaton:
-  - :approved
-  Daniel Varcas:
-  - :approved
   moogle: &2
-  - :approved
-  - :approved
-  - :approved
-  - :approved
-  - :approved
-  - :approved
   - :unapproved
-  - :banned
 old_members: *1
 current_status: *2
